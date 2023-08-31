@@ -27,16 +27,14 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('posts/{post}', function ($slug) { // $slug is the parameter of the inputed link: {post}
+Route::get('posts/{post}', function ($slug) { // $slug is the parameter of the inputted link: {post}
 
 //  Find a post by its slug and pass it to a view called "post"
-    $post = Post::find($slug);
-
     return view('post', [
-        'post' => $post
+        'post' => Post::find($slug)
     ]);
 
-})->where('post', '[A-z_\-]+');
+});
 
 /* MY OWN ROUTES END */
 
