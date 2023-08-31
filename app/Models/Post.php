@@ -4,31 +4,55 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\File;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 class Post
 {
+    public string $title;
+
+    public string $slug;
+
+    public string $excerpt;
+
+    public string $date;
+
+    public string $body;
+
+    public function __construct($title, $excerpt, $date, $body, $slug)
+    {
+        $this->title = $title;
+        $this->slug = $slug;
+        $this->excerpt = $excerpt;
+        $this->date = $date;
+        $this->body = $body;
+    }
+
+
     public static function all()
     {
-        $files = File::files(resource_path('posts/'));
-
-        return array_map(function ($file) { // Returns each file of posts folder and its content.
-            return $file->getContents();
-        }, $files);
-        // return is an array of strings.
+        return cache()->rememberForever('posts.all', function () {
+            return collect(File::files(resource_path('posts/')))
+                ->map(function ($file) {
+                    return YamlFrontMatter::parseFile($file);
+                })
+                ->map(function ($document) {
+                    return new Post(
+                        $document->matter('title'),
+                        $document->matter('excerpt'),
+                        $document->matter('date'),
+                        $document->body(),
+                        $document->matter('slug'),
+                    );
+                }
+                )->sortByDesc('date');
+            // return is a collection of Post objects.
+        });
     }
 
     public static function find($slug)
     {
-        // Checking if the file we are looking for exists
-        //                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        if (!file_exists($path = resource_path("posts/{$slug}.html"))) {
-            throw new ModelNotFoundException();
-        }
+        $posts = static::all();
 
-        // Caches the file for 20 minutes, allowing the for quick access for the content of the file
-        // without the machine looking for the directory every time.
-        return cache()->remember("post.{$slug}", now()->addMinutes(20), function () use ($path) {
-            return file_get_contents($path);
-        });
+        return $posts->firstWhere('slug', $slug);
     }
 }

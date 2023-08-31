@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Models\Post;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,8 +20,10 @@ use Illuminate\Support\Facades\Route;
 /* MY OWN ROUTES */
 
 Route::get('/', function () {
+
+
     return view('posts', [
-        'posts' => Post::all() // 'posts' will be passed to the view posts.blade.php in resources/view. Ref #1
+        'posts' => $posts = Post::all() // 'posts' will be passed to the view posts.blade.php in resources/view. Ref #1
     ]);
 });
 
