@@ -3,8 +3,15 @@
 @section('content')
     <article>
         <h1>{{ $post->title }}</h1>
+
+        <a href="#">
+            {{ $post->category->name }}
+        </a>
+
         <div>
-            {!! $post->body !!}
+            <p>
+                {!! $post->body !!}
+            </p>
         </div>
     </article>
 

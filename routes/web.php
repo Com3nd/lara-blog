@@ -27,11 +27,11 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('posts/{post}', function ($slug) { // $slug is the parameter of the inputted link: {post}
+Route::get('posts/{post}', function (Post $post) { // post is the parameter of the inputted link: {post}
 
-//  Find a post by its slug and pass it to a view called "post"
+//  Find a post by its id and pass it to a view called "post"
     return view('post', [
-        'post' => Post::find($slug)
+        'post' => $post
     ]);
 
 });

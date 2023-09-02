@@ -2,59 +2,48 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\File;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Post
+class Post extends Model
 {
-    public string $title;
+    use HasFactory;
 
-    public string $slug;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'title',
+        'excerpt',
+        'body',
+    ];
 
-    public string $excerpt;
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+    ];
 
-    public string $date;
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+    ];
 
-    public string $body;
-
-    public function __construct($title, $excerpt, $date, $body, $slug)
+    public function category()
     {
-        $this->title = $title;
-        $this->slug = $slug;
-        $this->excerpt = $excerpt;
-        $this->date = $date;
-        $this->body = $body;
+        return $this->belongsTo(Category::class);
     }
 
-
-    public static function all()
-    {
-        return cache()->rememberForever('posts.all', function () {
-            return collect(File::files(resource_path('posts/')))
-                ->map(function ($file) {
-                    return YamlFrontMatter::parseFile($file);
-                })
-                ->map(function ($document) {
-                    return new Post(
-                        $document->matter('title'),
-                        $document->matter('excerpt'),
-                        $document->matter('date'),
-                        $document->body(),
-                        $document->matter('slug'),
-                    );
-                }
-                )->sortByDesc('date');
-            // return is a collection of Post objects.
-        });
-    }
-
-    public static function find($slug)
-    {
-        if (! $post = static::all()->firstWhere('slug', $slug)) {
-            throw new ModelNotFoundException();
-        }
-
-        return $post;
-    }
+    // Use this method to use the 'slug' as the route key instead of the id
+//    public function getRouteKeyName()
+//    {
+//        return 'slug';
+//    }
 }
