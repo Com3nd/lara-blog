@@ -4,7 +4,7 @@
     <article>
         <h1>{{ $post->title }}</h1>
 
-        <a href="#">
+        By <a href="#">{{ $post->user->name }}</a> in <a href="/categories/{{ $post->category->slug }}">
             {{ $post->category->name }}
         </a>
 

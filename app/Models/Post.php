@@ -41,7 +41,13 @@ class Post extends Model
         return $this->belongsTo(Category::class);
     }
 
-    // Use this method to use the 'slug' as the route key instead of the id
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+//    Use this method to use the 'slug' as the route key instead of the id
+//    or use 'posts/{post:slug}' as the route in web.php
 //    public function getRouteKeyName()
 //    {
 //        return 'slug';

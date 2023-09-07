@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -21,19 +22,25 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 Route::get('/', function () {
 
-
     return view('posts', [
-        'posts' => $posts = Post::all() // 'posts' will be passed to the view posts.blade.php in resources/view. Ref #1
+        'posts' => Post::with('category')->get() //with category is to optimize the query to fix N+1
+        // 'posts' will be passed to the view posts.blade.php in resources/view. Ref #1
     ]);
 });
 
-Route::get('posts/{post}', function (Post $post) { // post is the parameter of the inputted link: {post}
-
+Route::get('posts/{post:slug}', function (Post $post) { // post is the parameter of the inputted link: {post}
+//    ddd($post);
 //  Find a post by its id and pass it to a view called "post"
     return view('post', [
         'post' => $post
     ]);
 
+});
+
+Route::get('categories/{category:slug}', function (Category $category) {
+    return view('categories', [
+        'posts' => $category->posts
+    ]);
 });
 
 /* MY OWN ROUTES END */
